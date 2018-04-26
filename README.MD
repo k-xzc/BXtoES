@@ -1,18 +1,18 @@
-#JStoES
+# BXtoES
 
-Deminstration how to use NodeJS to send data to ElasticSearch & Vitualize it on Grafanaa
+Deminstration how to use NodeJS to send Cryptocurrency data to ElasticSearch & Vitualize it on Grafanaa
 
-#Prerequisite
+# Prerequisite
 
 - ElasticSearch : https://www.elastic.co/downloads/elasticsearch
 - Grafana 	: http://grafana.org/download/
 
-#Run ElasticSearch
+# Run ElasticSearch
 
-#Run Grafana
+# Run Grafana
 
-#Checkout code from GitHub
+# Checkout code from GitHub
 
-#Running NodeJS
+# Running NodeJS
 - npm install
 - node app.js/index.js
