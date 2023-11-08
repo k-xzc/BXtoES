@@ -1,19 +1,20 @@
 var bodyParser = require('body-parser');
 var dateFormat = require('dateformat');
 var rp = require('request-promise');
-var es_host = process.env.es_host
-var es_port = process.env.es_port
-var es_index = process.env.es_index
-var es_type = process.env.es_type
-var secondary_cur = ["BTC","ETH","XRP","BSV","BCH","OMG"]
+var es_host = "localhost" //process.env.es_host
+var es_port = "9200"//process.env.es_port
+var es_index = "test-t"//process.env.es_index
+//var es_type = "abc"//process.env.es_type
+var secondary_cur = ["BTCUSDT","ETHUSDT","SOLUSDT"]
 var cron = require('node-cron');
 
 cron.schedule('*/10 * * * * *', function(){
- getCurrencyFromBx().then(function(currency_json){
+ getCurrencyFromBinance().then(function(currency_json){
   for(var i in currency_json){
    for(var j in secondary_cur){
-    if(currency_json[i].secondary_currency == secondary_cur[j] && currency_json[i].primary_currency == "THB"){
-           postToEs(generateNewJson(currency_json[i]))
+    if(currency_json[i].symbol == secondary_cur[j]){
+      postToEs(generateNewJson(currency_json[i]))
+      //console.log(generateNewJson(currency_json[i]))
     }
    }
   }
@@ -21,8 +22,8 @@ cron.schedule('*/10 * * * * *', function(){
 console.log("done")
 })
 
-function getCurrencyFromBx() {
-  url = "https://bx.in.th/api/"
+function getCurrencyFromBinance() {
+  url = "https://api.binance.com/api/v3/ticker/price"
   return rp({
         uri: url,
         headers: {
@@ -34,7 +35,7 @@ function getCurrencyFromBx() {
 }
 
 function postToEs(json) {
-  url = `http://${es_host}:${es_port}/${es_index}/${es_type}`
+  url = `http://${es_host}:${es_port}/${es_index}/_doc/`
   return rp({
         uri: url,
         headers: {
@@ -48,10 +49,8 @@ function postToEs(json) {
 
 function generateNewJson(currency_json) {
   return {
-    "currency_name": currency_json.secondary_currency,
-    "last_price": currency_json.last_price,
-    "bids":currency_json.orderbook.bids.highbid,
-    "asks":currency_json.orderbook.asks.highbid,
+    "currency_name": currency_json.symbol,
+    "last_price": currency_json.price,
     "timestamp": dateFormat(new Date(), "yyyy-mm-dd'T'HH:MM:ss'Z'")
   }
 }
